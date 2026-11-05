@@ -2,10 +2,15 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
 <title>10 Second Challenge</title>
 
 <style>
+
 * {
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
@@ -14,10 +19,22 @@
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: Arial, "Noto Sans KR", sans-serif;
+
+  font-family:
+    Arial,
+    "Noto Sans KR",
+    sans-serif;
+
   background:
-    radial-gradient(circle at 50% 25%, #25334d 0%, #111a2c 40%, #070b13 100%);
+    radial-gradient(
+      circle at 50% 25%,
+      #25334d 0%,
+      #111a2c 40%,
+      #070b13 100%
+    );
+
   color: white;
+
   display: flex;
   justify-content: center;
   align-items: center;
@@ -26,9 +43,14 @@ body {
 .game {
   width: min(92%, 480px);
   text-align: center;
+  padding: 35px 0;
 }
 
-/* 상단 */
+
+/* =========================
+   BRAND
+========================= */
+
 .brand {
   color: #ff2d55;
   letter-spacing: 3px;
@@ -39,7 +61,10 @@ body {
 
 h1 {
   margin: 0;
-  font-size: clamp(34px, 10vw, 54px);
+
+  font-size:
+    clamp(34px, 10vw, 54px);
+
   font-weight: 900;
   line-height: 0.95;
 }
@@ -49,7 +74,11 @@ h1 {
   margin: 18px 0 38px;
 }
 
-/* 이름 */
+
+/* =========================
+   NAME
+========================= */
+
 .name-area {
   margin-bottom: 28px;
 }
@@ -57,12 +86,21 @@ h1 {
 input {
   width: 100%;
   padding: 17px;
+
   border-radius: 12px;
-  border: 1px solid #364158;
-  background: rgba(255,255,255,.06);
+
+  border:
+    1px solid #364158;
+
+  background:
+    rgba(255,255,255,.06);
+
   color: white;
+
   text-align: center;
+
   font-size: 17px;
+
   outline: none;
 }
 
@@ -70,36 +108,73 @@ input:focus {
   border-color: #ff2d55;
 }
 
-/* 타이머 */
+input:disabled {
+  opacity: 0.65;
+}
+
+
+/* =========================
+   TIMER
+========================= */
+
 .timer-label {
   color: #8995a9;
+
   font-size: 13px;
+
   letter-spacing: 2px;
 }
 
 #timer {
-  font-size: clamp(60px, 20vw, 92px);
+
+  font-size:
+    clamp(60px, 20vw, 92px);
+
   font-weight: 800;
-  font-variant-numeric: tabular-nums;
+
+  font-variant-numeric:
+    tabular-nums;
+
   margin: 10px 0 34px;
+
   min-height: 105px;
 }
 
-/* 버튼 */
+
+/* =========================
+   BUTTON
+========================= */
+
 #mainBtn {
+
   width: 190px;
   height: 190px;
+
   border-radius: 50%;
+
   border: 0;
-  background: linear-gradient(145deg, #ff1744, #c40031);
+
+  background:
+    linear-gradient(
+      145deg,
+      #ff1744,
+      #c40031
+    );
+
   color: white;
+
   font-size: 29px;
+
   font-weight: 900;
+
   cursor: pointer;
+
   box-shadow:
     0 0 0 10px rgba(255,23,68,.08),
     0 0 50px rgba(255,23,68,.35);
+
   transition: .15s;
+
   touch-action: manipulation;
 }
 
@@ -108,184 +183,590 @@ input:focus {
 }
 
 #mainBtn.stop {
-  background: linear-gradient(145deg, #00d47b, #008c58);
+
+  background:
+    linear-gradient(
+      145deg,
+      #00d47b,
+      #008c58
+    );
+
   box-shadow:
     0 0 0 10px rgba(0,212,123,.08),
     0 0 50px rgba(0,212,123,.3);
 }
 
-/* 결과 */
+
+/* =========================
+   RESULT
+========================= */
+
 #result {
+
   margin-top: 32px;
+
   min-height: 110px;
 }
 
 .result-title {
+
   color: #96a1b4;
+
   font-size: 14px;
 }
 
 .result-time {
+
   font-size: 38px;
+
   font-weight: 800;
+
   margin: 7px;
 }
 
 .error {
+
   color: #ffcc00;
+
   font-size: 18px;
+
   font-weight: 700;
 }
 
-/* 재도전 */
-#retry {
-  display: none;
-  margin: 22px auto 0;
-  background: transparent;
-  color: #abb6c7;
-  border: 1px solid #455066;
-  border-radius: 30px;
-  padding: 12px 25px;
-  cursor: pointer;
+.message {
+
+  margin-top: 12px;
+
+  font-weight: bold;
+
+  color: white;
 }
 
-/* 안내 */
-.guide {
-  margin-top: 45px;
-  padding-top: 20px;
-  border-top: 1px solid rgba(255,255,255,.1);
+.save-status {
+
+  margin-top: 15px;
+
   font-size: 13px;
+
+  color: #8995a9;
+}
+
+.save-success {
+  color: #00d47b;
+}
+
+.save-error {
+  color: #ff5b72;
+}
+
+
+/* =========================
+   RETRY
+========================= */
+
+#retry {
+
+  display: none;
+
+  margin: 22px auto 0;
+
+  background: transparent;
+
+  color: #abb6c7;
+
+  border:
+    1px solid #455066;
+
+  border-radius: 30px;
+
+  padding: 12px 25px;
+
+  cursor: pointer;
+
+  font-size: 15px;
+}
+
+
+/* =========================
+   GUIDE
+========================= */
+
+.guide {
+
+  margin-top: 45px;
+
+  padding-top: 20px;
+
+  border-top:
+    1px solid rgba(255,255,255,.1);
+
+  font-size: 13px;
+
   color: #738096;
+
   line-height: 1.7;
 }
 
 .target {
+
   color: white;
+
   font-weight: bold;
 }
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-height: 700px) {
+
+  .game {
+    padding: 20px 0;
+  }
+
+  .subtitle {
+    margin-bottom: 20px;
+  }
+
+  .name-area {
+    margin-bottom: 18px;
+  }
+
+  #mainBtn {
+    width: 155px;
+    height: 155px;
+  }
+
+  .guide {
+    margin-top: 25px;
+  }
+
+}
+
 </style>
 </head>
+
 
 <body>
 
 <div class="game">
 
-  <div class="brand">HVAC ENGINEERING SEMINAR</div>
-
-  <h1>10 SECOND<br>CHALLENGE</h1>
-
-  <div class="subtitle">
-    Can you stop exactly at <b>10.000</b> seconds?
+  <div class="brand">
+    HVAC ENGINEERING SEMINAR
   </div>
 
+
+  <h1>
+    10 SECOND<br>
+    CHALLENGE
+  </h1>
+
+
+  <div class="subtitle">
+    Can you stop exactly at
+    <b>10.000</b>
+    seconds?
+  </div>
+
+
   <div class="name-area">
+
     <input
       id="playerName"
       maxlength="20"
+      autocomplete="off"
       placeholder="이름을 입력하세요">
+
   </div>
+
 
   <div class="timer-label">
     TARGET TIME
   </div>
 
+
   <div id="timer">
     10.000
   </div>
+
 
   <button id="mainBtn">
     START
   </button>
 
-  <div id="result"></div>
+
+  <div id="result">
+  </div>
+
 
   <button id="retry">
     ↻ 다시 도전
   </button>
 
+
   <div class="guide">
-    START 버튼을 누르면 시간이 시작됩니다.<br>
-    잠시 후 타이머가 사라집니다.<br>
-    <span class="target">정확히 10초</span>라고 생각되는 순간 STOP!
+
+    START 버튼을 누르면 시간이 시작됩니다.
+    <br>
+
+    1초 후 타이머가 사라집니다.
+    <br>
+
+    <span class="target">
+      정확히 10초
+    </span>
+
+    라고 생각되는 순간 STOP!
+
   </div>
 
 </div>
 
 
-<script>
 
-const TARGET = 10000;      // 10초
-const HIDE_AFTER = 1000;   // 1초 후 화면에서 시간 숨김
+<script type="module">
 
-let running = false;
-let startTime = 0;
-let animationId;
+
+/* =====================================================
+   FIREBASE IMPORT
+===================================================== */
+
+
+import {
+  initializeApp
+}
+from
+"https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+
+
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  serverTimestamp
+}
+from
+"https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+
+
+import {
+  getAnalytics
+}
+from
+"https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
+
+
+
+/* =====================================================
+   FIREBASE CONFIG
+   사용자 Firebase 프로젝트 정보 적용
+===================================================== */
+
+
+const firebaseConfig = {
+
+  apiKey:
+    "AIzaSyB2GfNK5K9RxgDj6CNvL8e6-790W9Odxu4",
+
+  authDomain:
+    "hvac-10second.firebaseapp.com",
+
+  projectId:
+    "hvac-10second",
+
+  storageBucket:
+    "hvac-10second.firebasestorage.app",
+
+  messagingSenderId:
+    "509312860044",
+
+  appId:
+    "1:509312860044:web:ae287cd531ad755e4820a9",
+
+  measurementId:
+    "G-QPK37T0F3R"
+
+};
+
+
+
+/* =====================================================
+   FIREBASE INITIALIZE
+===================================================== */
+
+
+const app =
+  initializeApp(firebaseConfig);
+
+
+const db =
+  getFirestore(app);
+
+
+/*
+   Analytics는 게임 동작에는
+   필수 기능은 아니지만
+   사용자가 제공한 measurementId를 사용합니다.
+*/
+
+try {
+
+  getAnalytics(app);
+
+}
+catch (error) {
+
+  console.log(
+    "Analytics unavailable:",
+    error
+  );
+
+}
+
+
+
+/* =====================================================
+   GAME SETTINGS
+===================================================== */
+
+
+const TARGET =
+  10000;
+
+
+/*
+  타이머를 보여주는 시간
+
+  1000 = 1초
+*/
+
+const HIDE_AFTER =
+  1000;
+
+
+
+/* =====================================================
+   VARIABLES
+===================================================== */
+
+
+let running =
+  false;
+
+
+let startTime =
+  0;
+
+
+let animationId =
+  null;
+
+
+let saving =
+  false;
+
+
+
+/* =====================================================
+   ELEMENTS
+===================================================== */
+
 
 const timer =
-  document.getElementById("timer");
+  document.getElementById(
+    "timer"
+  );
+
 
 const mainBtn =
-  document.getElementById("mainBtn");
+  document.getElementById(
+    "mainBtn"
+  );
+
 
 const result =
-  document.getElementById("result");
+  document.getElementById(
+    "result"
+  );
+
 
 const retry =
-  document.getElementById("retry");
+  document.getElementById(
+    "retry"
+  );
+
 
 const playerName =
-  document.getElementById("playerName");
+  document.getElementById(
+    "playerName"
+  );
+
+
+
+/* =====================================================
+   TIME FORMAT
+===================================================== */
 
 
 function formatTime(ms) {
 
-  return (ms / 1000).toFixed(3);
+  return (
+    ms / 1000
+  ).toFixed(3);
 
 }
+
+
+
+/* =====================================================
+   HTML ESCAPE
+   이름에 HTML 코드가 들어가는 것을 방지
+===================================================== */
+
+
+function escapeHTML(text) {
+
+  const div =
+    document.createElement(
+      "div"
+    );
+
+
+  div.textContent =
+    text;
+
+
+  return div.innerHTML;
+
+}
+
+
+
+/* =====================================================
+   TIMER UPDATE
+===================================================== */
 
 
 function updateTimer() {
 
-  if (!running) return;
 
-  const elapsed =
-    performance.now() - startTime;
+  if (!running) {
 
-  if (elapsed < HIDE_AFTER) {
-
-    timer.textContent =
-      formatTime(elapsed);
-
-  } else {
-
-    timer.textContent = "•••";
+    return;
 
   }
 
+
+  const elapsed =
+    performance.now()
+    -
+    startTime;
+
+
+  /*
+     시작 후 1초 동안만
+     실제 시간이 표시됩니다.
+  */
+
+  if (
+    elapsed <
+    HIDE_AFTER
+  ) {
+
+    timer.textContent =
+      formatTime(
+        elapsed
+      );
+
+  }
+
+
+  /*
+     1초 이후에는
+     시간을 숨깁니다.
+  */
+
+  else {
+
+    timer.textContent =
+      "•••";
+
+  }
+
+
   animationId =
-    requestAnimationFrame(updateTimer);
+    requestAnimationFrame(
+      updateTimer
+    );
 
 }
 
 
+
+/* =====================================================
+   START GAME
+===================================================== */
+
+
 function startGame() {
 
-  if (!playerName.value.trim()) {
 
-    alert("참가자 이름을 입력해주세요.");
+  const name =
+    playerName
+      .value
+      .trim();
+
+
+  /*
+     이름 체크
+  */
+
+  if (!name) {
+
+    alert(
+      "참가자 이름을 입력해주세요."
+    );
+
+
     playerName.focus();
 
+
     return;
+
   }
 
 
-  running = true;
+  if (name.length > 20) {
+
+    alert(
+      "이름은 20자 이내로 입력해주세요."
+    );
+
+    return;
+
+  }
+
+
+  /*
+     게임 시작
+  */
+
+  running =
+    true;
+
+
+  saving =
+    false;
+
 
   startTime =
     performance.now();
 
 
-  result.innerHTML = "";
+  result.innerHTML =
+    "";
+
 
   retry.style.display =
     "none";
@@ -298,6 +779,7 @@ function startGame() {
   mainBtn.textContent =
     "STOP";
 
+
   mainBtn.classList.add(
     "stop"
   );
@@ -308,14 +790,52 @@ function startGame() {
 
 
   animationId =
-    requestAnimationFrame(updateTimer);
+    requestAnimationFrame(
+      updateTimer
+    );
 
 }
 
 
-function stopGame() {
 
-  running = false;
+/* =====================================================
+   STOP GAME
+===================================================== */
+
+
+async function stopGame() {
+
+
+  /*
+     중복 터치 방지
+  */
+
+  if (
+    !running ||
+    saving
+  ) {
+
+    return;
+
+  }
+
+
+  /*
+     STOP한 순간 시간을
+     가장 먼저 측정합니다.
+  */
+
+  const stopTime =
+    performance.now();
+
+
+  running =
+    false;
+
+
+  saving =
+    true;
+
 
   cancelAnimationFrame(
     animationId
@@ -323,83 +843,170 @@ function stopGame() {
 
 
   const elapsed =
-    performance.now() - startTime;
+    stopTime
+    -
+    startTime;
 
+
+  /*
+     목표시간 10초와 차이
+  */
 
   const difference =
-    elapsed - TARGET;
+    elapsed
+    -
+    TARGET;
 
 
   const absoluteDifference =
-    Math.abs(difference);
+    Math.abs(
+      difference
+    );
 
 
   timer.textContent =
-    formatTime(elapsed);
+    formatTime(
+      elapsed
+    );
 
 
-  let message = "";
+
+  /* =================================================
+     RESULT MESSAGE
+  ================================================= */
 
 
-  if (absoluteDifference <= 10) {
+  let message =
+    "";
 
-    message = "🏆 PERFECT!";
+
+  if (
+    absoluteDifference
+    <=
+    10
+  ) {
+
+    message =
+      "🏆 PERFECT!";
+
+  }
+
+
+  else if (
+    absoluteDifference
+    <=
+    50
+  ) {
+
+    message =
+      "🔥 AMAZING!";
 
   }
 
-  else if (absoluteDifference <= 50) {
 
-    message = "🔥 AMAZING!";
+  else if (
+    absoluteDifference
+    <=
+    100
+  ) {
+
+    message =
+      "👏 GREAT!";
+
+  }
+
+
+  else if (
+    absoluteDifference
+    <=
+    300
+  ) {
+
+    message =
+      "👍 GOOD!";
 
   }
 
-  else if (absoluteDifference <= 100) {
-
-    message = "👏 GREAT!";
-
-  }
-
-  else if (absoluteDifference <= 300) {
-
-    message = "👍 GOOD!";
-
-  }
 
   else {
 
-    message = "한 번 더 도전해보세요!";
+    message =
+      "한 번 더 도전해보세요!";
 
   }
+
+
+
+  /* =================================================
+     PLUS / MINUS
+  ================================================= */
 
 
   const sign =
     difference >= 0
-    ? "+"
-    : "-";
+      ?
+      "+"
+      :
+      "-";
+
+
+  const safeName =
+    escapeHTML(
+      playerName
+        .value
+        .trim()
+    );
+
+
+
+  /* =================================================
+     RESULT DISPLAY
+  ================================================= */
 
 
   result.innerHTML = `
 
-    <div class="result-title">
-      ${playerName.value}님의 기록
+    <div
+      class="result-title">
+
+      ${safeName}님의 기록
+
     </div>
 
-    <div class="result-time">
+
+    <div
+      class="result-time">
+
       ${formatTime(elapsed)}초
+
     </div>
 
-    <div class="error">
-      오차 ${sign}${formatTime(
+
+    <div
+      class="error">
+
+      오차
+      ${sign}${formatTime(
         absoluteDifference
       )}초
+
     </div>
 
-    <div style="
-      margin-top:12px;
-      font-weight:bold;
-      color:white;
-    ">
+
+    <div
+      class="message">
+
       ${message}
+
+    </div>
+
+
+    <div
+      id="saveStatus"
+      class="save-status">
+
+      Firebase에 기록 저장 중...
+
     </div>
 
   `;
@@ -412,12 +1019,214 @@ function stopGame() {
   retry.style.display =
     "block";
 
+
+
+  /* =================================================
+     FIRESTORE SAVE
+  ================================================= */
+
+
+  try {
+
+
+    const scoreData = {
+
+
+      /*
+         참가자 이름
+      */
+
+      name:
+        playerName
+          .value
+          .trim(),
+
+
+      /*
+         실제 기록
+         예: 9.987
+      */
+
+      time:
+        Number(
+          formatTime(
+            elapsed
+          )
+        ),
+
+
+      /*
+         목표시간과 오차
+
+         예:
+         9.987초
+
+         error = 0.013
+      */
+
+      error:
+        Number(
+          formatTime(
+            absoluteDifference
+          )
+        ),
+
+
+      /*
+         목표보다
+         빠른지/느린지 확인하기 위한 값
+
+         예:
+         -0.013
+         +0.034
+      */
+
+      difference:
+        Number(
+          formatTime(
+            difference
+          )
+        ),
+
+
+      /*
+         목표 시간
+      */
+
+      target:
+        10,
+
+
+      /*
+         서버 기준 저장시간
+      */
+
+      timestamp:
+        serverTimestamp()
+
+
+    };
+
+
+
+    /*
+       scores 컬렉션에
+       새로운 문서 생성
+    */
+
+
+    const docRef =
+      await addDoc(
+
+        collection(
+          db,
+          "scores"
+        ),
+
+        scoreData
+
+      );
+
+
+
+    console.log(
+      "Score saved:",
+      docRef.id
+    );
+
+
+
+    const saveStatus =
+      document.getElementById(
+        "saveStatus"
+      );
+
+
+    if (saveStatus) {
+
+      saveStatus.className =
+        "save-status save-success";
+
+
+      saveStatus.innerHTML =
+        "✓ 기록이 저장되었습니다.";
+
+    }
+
+
+  }
+
+
+  /* =================================================
+     SAVE ERROR
+  ================================================= */
+
+
+  catch (error) {
+
+
+    console.error(
+      "Firebase save error:",
+      error
+    );
+
+
+    const saveStatus =
+      document.getElementById(
+        "saveStatus"
+      );
+
+
+    if (saveStatus) {
+
+      saveStatus.className =
+        "save-status save-error";
+
+
+      saveStatus.innerHTML =
+        "⚠ 기록 저장에 실패했습니다.";
+
+    }
+
+
+  }
+
+
+  finally {
+
+    saving =
+      false;
+
+  }
+
 }
+
+
+
+/* =====================================================
+   RESET GAME
+===================================================== */
 
 
 function resetGame() {
 
-  running = false;
+
+  running =
+    false;
+
+
+  saving =
+    false;
+
+
+  if (animationId) {
+
+    cancelAnimationFrame(
+      animationId
+    );
+
+  }
+
 
   timer.textContent =
     "10.000";
@@ -450,28 +1259,83 @@ function resetGame() {
 }
 
 
+
+/* =====================================================
+   MAIN BUTTON
+===================================================== */
+
+
 mainBtn.addEventListener(
+
   "click",
+
   function() {
+
 
     if (!running) {
 
       startGame();
 
-    } else {
+    }
+
+
+    else {
 
       stopGame();
 
     }
 
+
   }
+
 );
+
+
+
+/* =====================================================
+   RETRY BUTTON
+===================================================== */
 
 
 retry.addEventListener(
+
   "click",
+
   resetGame
+
 );
+
+
+
+/* =====================================================
+   ENTER KEY
+===================================================== */
+
+
+playerName.addEventListener(
+
+  "keydown",
+
+  function(event) {
+
+
+    if (
+      event.key
+      ===
+      "Enter"
+    ) {
+
+      playerName.blur();
+
+      startGame();
+
+    }
+
+
+  }
+
+);
+
 
 </script>
 
