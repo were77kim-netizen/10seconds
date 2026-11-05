@@ -1,1293 +1,477 @@
-
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="utf-8">
-<meta name="viewport"
-      content="width=device-width,initial-scale=1,viewport-fit=cover">
-
-<title>10초 맞추기 Challenge</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>10 Second Challenge</title>
 
 <style>
-:root{
-  --bg:#03130d;
-  --card:#0a2418;
-  --line:#245139;
-  --accent:#ffd43b;
-  --green:#20c979;
-  --white:#f7fbf8;
-  --muted:#a9c2b4;
-  --red:#ff5d6c;
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
-*{
-  box-sizing:border-box;
-}
-
-body{
-  margin:0;
-  font-family:Arial,"Noto Sans KR",sans-serif;
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Arial, "Noto Sans KR", sans-serif;
   background:
-    radial-gradient(
-      circle at 20% 0,
-      #164c31 0,
-      #03130d 42%,
-      #020906 100%
-    );
-  color:var(--white);
-  min-height:100vh;
+    radial-gradient(circle at 50% 25%, #25334d 0%, #111a2c 40%, #070b13 100%);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.wrap{
-  max-width:680px;
-  margin:auto;
-  padding:24px 18px 70px;
+.game {
+  width: min(92%, 480px);
+  text-align: center;
 }
 
-.brand{
-  color:var(--accent);
-  font-size:13px;
-  letter-spacing:1.5px;
+/* 상단 */
+.brand {
+  color: #ff2d55;
+  letter-spacing: 3px;
+  font-weight: 800;
+  font-size: 14px;
+  margin-bottom: 18px;
 }
 
-.title{
-  font-size:38px;
-  margin:8px 0;
+h1 {
+  margin: 0;
+  font-size: clamp(34px, 10vw, 54px);
+  font-weight: 900;
+  line-height: 0.95;
 }
 
-.sub{
-  color:var(--muted);
-  line-height:1.6;
+.subtitle {
+  color: #aeb8c9;
+  margin: 18px 0 38px;
 }
 
-.card{
-  background:rgba(10,36,24,.93);
-  border:1px solid var(--line);
-  border-radius:24px;
-  padding:22px;
-  margin-top:18px;
-  box-shadow:0 18px 55px #0008;
+/* 이름 */
+.name-area {
+  margin-bottom: 28px;
 }
 
-.field{
-  margin:14px 0;
+input {
+  width: 100%;
+  padding: 17px;
+  border-radius: 12px;
+  border: 1px solid #364158;
+  background: rgba(255,255,255,.06);
+  color: white;
+  text-align: center;
+  font-size: 17px;
+  outline: none;
 }
 
-label{
-  display:block;
-  margin-bottom:7px;
-  font-weight:700;
+input:focus {
+  border-color: #ff2d55;
 }
 
-input{
-  width:100%;
-  padding:15px;
-  border-radius:13px;
-  border:1px solid #37634c;
-  background:#061b11;
-  color:white;
-  font-size:17px;
+/* 타이머 */
+.timer-label {
+  color: #8995a9;
+  font-size: 13px;
+  letter-spacing: 2px;
 }
 
-.agree{
-  display:flex;
-  gap:9px;
-  align-items:flex-start;
-  color:var(--muted);
-  font-size:14px;
+#timer {
+  font-size: clamp(60px, 20vw, 92px);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  margin: 10px 0 34px;
+  min-height: 105px;
 }
 
-.agree input{
-  width:20px;
-  margin-top:2px;
+/* 버튼 */
+#mainBtn {
+  width: 190px;
+  height: 190px;
+  border-radius: 50%;
+  border: 0;
+  background: linear-gradient(145deg, #ff1744, #c40031);
+  color: white;
+  font-size: 29px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow:
+    0 0 0 10px rgba(255,23,68,.08),
+    0 0 50px rgba(255,23,68,.35);
+  transition: .15s;
+  touch-action: manipulation;
 }
 
-.btn{
-  width:100%;
-  padding:17px;
-  border:0;
-  border-radius:15px;
-  background:var(--accent);
-  color:#132018;
-  font-size:19px;
-  font-weight:900;
-  cursor:pointer;
-  margin-top:14px;
+#mainBtn:active {
+  transform: scale(.95);
 }
 
-.btn.stop{
-  background:var(--red);
-  color:white;
-  font-size:26px;
+#mainBtn.stop {
+  background: linear-gradient(145deg, #00d47b, #008c58);
+  box-shadow:
+    0 0 0 10px rgba(0,212,123,.08),
+    0 0 50px rgba(0,212,123,.3);
 }
 
-.btn.secondary{
-  background:#173b29;
-  color:white;
+/* 결과 */
+#result {
+  margin-top: 32px;
+  min-height: 110px;
 }
 
-.btn:disabled{
-  opacity:.45;
-  cursor:not-allowed;
+.result-title {
+  color: #96a1b4;
+  font-size: 14px;
 }
 
-.timer{
-  text-align:center;
-  font-size:64px;
-  font-weight:900;
-  letter-spacing:2px;
-  margin:40px 0;
+.result-time {
+  font-size: 38px;
+  font-weight: 800;
+  margin: 7px;
 }
 
-.hiddenTime{
-  font-size:30px;
-  color:var(--muted);
+.error {
+  color: #ffcc00;
+  font-size: 18px;
+  font-weight: 700;
 }
 
-.result{
-  text-align:center;
+/* 재도전 */
+#retry {
+  display: none;
+  margin: 22px auto 0;
+  background: transparent;
+  color: #abb6c7;
+  border: 1px solid #455066;
+  border-radius: 30px;
+  padding: 12px 25px;
+  cursor: pointer;
 }
 
-.big{
-  font-size:54px;
-  font-weight:900;
-  color:var(--accent);
+/* 안내 */
+.guide {
+  margin-top: 45px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,.1);
+  font-size: 13px;
+  color: #738096;
+  line-height: 1.7;
 }
 
-.rank{
-  font-size:28px;
-  color:var(--green);
-  font-weight:800;
-}
-
-.notice{
-  padding:13px;
-  border-radius:12px;
-  background:#102d20;
-  color:#cfe4d8;
-  margin-top:14px;
-}
-
-.error{
-  background:#451b21;
-  color:#ffdce0;
-}
-
-.hide{
-  display:none!important;
-}
-
-table{
-  width:100%;
-  border-collapse:collapse;
-  font-size:14px;
-}
-
-th,td{
-  padding:10px 6px;
-  border-bottom:1px solid var(--line);
-  text-align:center;
-}
-
-th{
-  color:var(--accent);
-}
-
-.adminLine{
-  display:flex;
-  gap:8px;
-}
-
-.adminLine input{
-  flex:1;
-}
-
-.small{
-  font-size:12px;
-  color:var(--muted);
-  line-height:1.5;
-}
-
-/* 모바일 */
-@media(max-width:500px){
-
-  .title{
-    font-size:32px;
-  }
-
-  .timer{
-    font-size:52px;
-  }
-
-  .big{
-    font-size:46px;
-  }
-
+.target {
+  color: white;
+  font-weight: bold;
 }
 </style>
 </head>
 
 <body>
 
-<main class="wrap">
+<div class="game">
 
-  <div class="brand">
-    10 SECOND CHALLENGE
+  <div class="brand">HVAC ENGINEERING SEMINAR</div>
+
+  <h1>10 SECOND<br>CHALLENGE</h1>
+
+  <div class="subtitle">
+    Can you stop exactly at <b>10.000</b> seconds?
   </div>
 
-  <h1 class="title">
-    10초를 맞춰라!
-  </h1>
-
-  <div class="sub">
-    START를 누른 뒤 화면의 시간을 보지 않고
-    정확히 10초라고 생각되는 순간 STOP을 누르세요.
-    참여는 사번당 1회입니다.
+  <div class="name-area">
+    <input
+      id="playerName"
+      maxlength="20"
+      placeholder="이름을 입력하세요">
   </div>
 
+  <div class="timer-label">
+    TARGET TIME
+  </div>
 
-  <!-- 참가자 입력 -->
-  <section id="entry" class="card">
+  <div id="timer">
+    10.000
+  </div>
 
-    <div class="field">
-      <label for="name">이름</label>
+  <button id="mainBtn">
+    START
+  </button>
 
-      <input
-        id="name"
-        maxlength="30"
-        autocomplete="name"
-        placeholder="이름 입력">
-    </div>
+  <div id="result"></div>
 
+  <button id="retry">
+    ↻ 다시 도전
+  </button>
 
-    <div class="field">
+  <div class="guide">
+    START 버튼을 누르면 시간이 시작됩니다.<br>
+    잠시 후 타이머가 사라집니다.<br>
+    <span class="target">정확히 10초</span>라고 생각되는 순간 STOP!
+  </div>
 
-      <label for="employeeId">
-        사번
-      </label>
+</div>
 
-      <input
-        id="employeeId"
-        maxlength="20"
-        inputmode="numeric"
-        autocomplete="off"
-        placeholder="사번 입력">
 
-    </div>
+<script>
 
+const TARGET = 10000;      // 10초
+const HIDE_AFTER = 1000;   // 1초 후 화면에서 시간 숨김
 
-    <label class="agree">
+let running = false;
+let startTime = 0;
+let animationId;
 
-      <input
-        id="agree"
-        type="checkbox">
+const timer =
+  document.getElementById("timer");
 
-      <span>
-        게임 운영을 위해 이름, 사번, 기록,
-        오차, 참여시간을 수집하는 데 동의합니다.
-      </span>
+const mainBtn =
+  document.getElementById("mainBtn");
 
-    </label>
+const result =
+  document.getElementById("result");
 
+const retry =
+  document.getElementById("retry");
 
-    <button
-      id="enterBtn"
-      class="btn">
+const playerName =
+  document.getElementById("playerName");
 
-      참여 확인
 
-    </button>
+function formatTime(ms) {
 
-    <div id="entryMsg"></div>
-
-  </section>
-
-
-  <!-- 게임 화면 -->
-  <section
-    id="game"
-    class="card hide">
-
-    <div
-      id="timer"
-      class="timer">
-
-      10.00
-
-    </div>
-
-
-    <button
-      id="startBtn"
-      class="btn">
-
-      START
-
-    </button>
-
-
-    <button
-      id="stopBtn"
-      class="btn stop hide">
-
-      STOP
-
-    </button>
-
-
-    <div id="gameMsg"></div>
-
-  </section>
-
-
-  <!-- 결과 -->
-  <section
-    id="result"
-    class="card result hide">
-
-    <div class="sub">
-      나의 기록
-    </div>
-
-    <div
-      id="record"
-      class="big">
-    </div>
-
-    <p>
-      10초와의 오차
-      <strong id="errorVal"></strong>
-    </p>
-
-    <div
-      id="rank"
-      class="rank">
-    </div>
-
-
-    <div class="notice">
-      결과가 저장되었습니다.<br>
-      재참여할 수 없습니다.
-    </div>
-
-  </section>
-
-
-  <!-- 순위 -->
-  <section class="card">
-
-    <h2>
-      실시간 TOP 10
-    </h2>
-
-    <table>
-
-      <thead>
-        <tr>
-          <th>순위</th>
-          <th>이름</th>
-          <th>기록</th>
-          <th>오차</th>
-        </tr>
-      </thead>
-
-      <tbody id="leaderBody">
-
-        <tr>
-          <td colspan="4">
-            불러오는 중...
-          </td>
-        </tr>
-
-      </tbody>
-
-    </table>
-
-  </section>
-
-
-  <!-- 관리자 -->
-  <section class="card">
-
-    <h2>
-      관리자 결과 다운로드
-    </h2>
-
-    <div class="adminLine">
-
-      <input
-        id="adminPassword"
-        type="password"
-        placeholder="관리자 비밀번호">
-
-      <button
-        id="downloadBtn"
-        class="btn secondary"
-        style="margin:0;width:auto">
-
-        Excel 다운로드
-
-      </button>
-
-    </div>
-
-    <div
-      id="adminMsg"
-      class="small">
-    </div>
-
-  </section>
-
-</main>
-
-
-<script type="module">
-
-/* =====================================================
-   Firebase 설정
-
-   Firebase Console
-   → 프로젝트 설정
-   → 내 앱
-   → 웹 앱
-
-   아래 값을 실제 설정값으로 교체
-===================================================== */
-
-const firebaseConfig = {
-
-  apiKey:
-    "YOUR_API_KEY",
-
-  authDomain:
-    "YOUR_PROJECT.firebaseapp.com",
-
-  projectId:
-    "YOUR_PROJECT_ID",
-
-  storageBucket:
-    "YOUR_PROJECT.firebasestorage.app",
-
-  messagingSenderId:
-    "YOUR_SENDER_ID",
-
-  appId:
-    "YOUR_APP_ID"
-
-};
-
-
-/* 관리자 다운로드 비밀번호 */
-
-const ADMIN_PASSWORD =
-  "CHANGE_ME_2026";
-
-
-/* Firebase */
-
-import {
-  initializeApp
-}
-from
-"https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-
-
-import {
-
-  getFirestore,
-  doc,
-  getDoc,
-  collection,
-  query,
-  orderBy,
-  limit,
-  onSnapshot,
-  getDocs,
-  serverTimestamp,
-  runTransaction
-
-}
-from
-"https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
-
-
-const app =
-  initializeApp(firebaseConfig);
-
-const db =
-  getFirestore(app);
-
-
-const $ =
-  id => document.getElementById(id);
-
-
-let startAt = 0;
-
-let lockedId = "";
-
-
-/* 사번 정리 */
-
-const cleanId =
-  value =>
-  value.trim()
-       .replace(
-         /[^0-9A-Za-z_-]/g,
-         ""
-       );
-
-
-/* 이름 마스킹 */
-
-const mask = name => {
-
-  if(name.length <= 1){
-    return "*";
-  }
-
-  return (
-    name[0] +
-    "○".repeat(
-      Math.max(
-        1,
-        name.length - 1
-      )
-    )
-  );
-
-};
-
-
-/* 메시지 */
-
-function message(
-  elementId,
-  text,
-  error = false
-){
-
-  $(elementId).innerHTML =
-
-    text
-
-    ? `
-      <div class="notice ${error ? "error" : ""}">
-        ${text}
-      </div>
-      `
-
-    : "";
+  return (ms / 1000).toFixed(3);
 
 }
 
 
-/* =====================================================
-   순위 계산
-===================================================== */
+function updateTimer() {
 
-async function refreshRank(){
+  if (!running) return;
 
-  const q = query(
+  const elapsed =
+    performance.now() - startTime;
 
-    collection(
-      db,
-      "gameResults"
-    ),
+  if (elapsed < HIDE_AFTER) {
 
-    orderBy(
-      "errorMs"
-    ),
+    timer.textContent =
+      formatTime(elapsed);
 
-    limit(500)
+  } else {
 
-  );
+    timer.textContent = "•••";
 
+  }
 
-  const snapshot =
-    await getDocs(q);
-
-
-  let rank = 0;
-
-  let rows = [];
-
-
-  snapshot.forEach(
-    (documentSnapshot,index) => {
-
-      const data =
-        documentSnapshot.data();
-
-
-      /* 내 순위 */
-
-      if(
-        data.employeeId ===
-        lockedId
-      ){
-
-        rank =
-          index + 1;
-
-      }
-
-
-      /* TOP 10 */
-
-      if(index < 10){
-
-        rows.push(`
-
-          <tr>
-
-            <td>
-              ${index + 1}
-            </td>
-
-            <td>
-              ${mask(data.name)}
-            </td>
-
-            <td>
-              ${(data.recordMs / 1000)
-                .toFixed(3)}초
-            </td>
-
-            <td>
-              ${(data.errorMs / 1000)
-                .toFixed(3)}초
-            </td>
-
-          </tr>
-
-        `);
-
-      }
-
-    }
-  );
-
-
-  $("leaderBody").innerHTML =
-
-    rows.join("")
-
-    ||
-
-    `
-    <tr>
-      <td colspan="4">
-        아직 참가자가 없습니다.
-      </td>
-    </tr>
-    `;
-
-
-  return rank;
+  animationId =
+    requestAnimationFrame(updateTimer);
 
 }
 
 
-/* =====================================================
-   실시간 TOP 10
-===================================================== */
+function startGame() {
 
-const leaderboardQuery =
-  query(
+  if (!playerName.value.trim()) {
 
-    collection(
-      db,
-      "gameResults"
-    ),
+    alert("참가자 이름을 입력해주세요.");
+    playerName.focus();
 
-    orderBy(
-      "errorMs"
-    ),
-
-    limit(10)
-
-  );
-
-
-onSnapshot(
-
-  leaderboardQuery,
-
-  snapshot => {
-
-    let rows = [];
-
-
-    snapshot.forEach(
-      (documentSnapshot,index) => {
-
-        const data =
-          documentSnapshot.data();
-
-
-        rows.push(`
-
-          <tr>
-
-            <td>
-              ${index + 1}
-            </td>
-
-            <td>
-              ${mask(data.name)}
-            </td>
-
-            <td>
-              ${(data.recordMs / 1000)
-                .toFixed(3)}초
-            </td>
-
-            <td>
-              ${(data.errorMs / 1000)
-                .toFixed(3)}초
-            </td>
-
-          </tr>
-
-        `);
-
-      }
-    );
-
-
-    $("leaderBody").innerHTML =
-
-      rows.join("")
-
-      ||
-
-      `
-      <tr>
-        <td colspan="4">
-          아직 참가자가 없습니다.
-        </td>
-      </tr>
-      `;
-
-  },
-
-  () => {
-
-    $("leaderBody").innerHTML =
-
-      `
-      <tr>
-        <td colspan="4">
-          Firebase 설정을 확인하세요.
-        </td>
-      </tr>
-      `;
-
+    return;
   }
 
-);
 
+  running = true;
 
-/* =====================================================
-   참여 확인
-===================================================== */
-
-$("enterBtn").onclick =
-async () => {
-
-  try {
-
-    const name =
-      $("name").value.trim();
-
-
-    const employeeId =
-      cleanId(
-        $("employeeId").value
-      );
-
-
-    if(
-      name.length < 2 ||
-      employeeId.length < 3
-    ){
-
-      throw new Error(
-        "이름과 사번을 정확히 입력해 주세요."
-      );
-
-    }
-
-
-    if(
-      !$("agree").checked
-    ){
-
-      throw new Error(
-        "정보 수집 동의가 필요합니다."
-      );
-
-    }
-
-
-    /* Firestore에서 기존 참가자 확인 */
-
-    const participantRef =
-      doc(
-        db,
-        "gameResults",
-        employeeId
-      );
-
-
-    const oldResult =
-      await getDoc(
-        participantRef
-      );
-
-
-    if(
-      oldResult.exists()
-    ){
-
-      throw new Error(
-        "이미 참여한 사번입니다. 게임은 1인 1회만 가능합니다."
-      );
-
-    }
-
-
-    lockedId =
-      employeeId;
-
-
-    $("entry")
-      .classList
-      .add("hide");
-
-
-    $("game")
-      .classList
-      .remove("hide");
-
-  }
-
-  catch(error){
-
-    message(
-      "entryMsg",
-      error.message,
-      true
-    );
-
-  }
-
-};
-
-
-/* =====================================================
-   START
-===================================================== */
-
-$("startBtn").onclick =
-() => {
-
-  startAt =
+  startTime =
     performance.now();
 
 
-  $("startBtn")
-    .classList
-    .add("hide");
+  result.innerHTML = "";
+
+  retry.style.display =
+    "none";
 
 
-  $("stopBtn")
-    .classList
-    .remove("hide");
-
-
-  /*
-    START 이후 실제 타이머 숫자를
-    보여주지 않음
-  */
-
-  $("timer").textContent =
-    "시간을 마음속으로 세어보세요";
-
-
-  $("timer")
-    .classList
-    .add(
-      "hiddenTime"
-    );
-
-};
-
-
-/* =====================================================
-   STOP
-===================================================== */
-
-$("stopBtn").onclick =
-async () => {
-
-  /*
-    버튼을 누른 바로 그 순간 시간을 측정
-  */
-
-  const elapsed =
-    Math.round(
-      performance.now() -
-      startAt
-    );
-
-
-  $("stopBtn").disabled =
+  playerName.disabled =
     true;
 
 
-  try {
+  mainBtn.textContent =
+    "STOP";
 
-    const name =
-      $("name").value.trim();
-
-
-    const employeeId =
-      lockedId;
+  mainBtn.classList.add(
+    "stop"
+  );
 
 
-    /*
-      목표 시간:
-      10,000 ms
-    */
-
-    const errorMs =
-      Math.abs(
-        elapsed - 10000
-      );
+  timer.textContent =
+    "0.000";
 
 
-    const participantRef =
-      doc(
-        db,
-        "gameResults",
-        employeeId
-      );
+  animationId =
+    requestAnimationFrame(updateTimer);
+
+}
 
 
-    /*
-      Transaction으로 다시 한번
-      중복 참가 확인
+function stopGame() {
 
-      여러 기기에서 동시에 같은 사번으로
-      참가하는 상황을 방지
-    */
+  running = false;
 
-    await runTransaction(
-
-      db,
-
-      async transaction => {
+  cancelAnimationFrame(
+    animationId
+  );
 
 
-        const existing =
-          await transaction.get(
-            participantRef
-          );
+  const elapsed =
+    performance.now() - startTime;
 
 
-        if(
-          existing.exists()
-        ){
-
-          throw new Error(
-            "이미 참여한 사번입니다."
-          );
-
-        }
+  const difference =
+    elapsed - TARGET;
 
 
-        transaction.set(
-
-          participantRef,
-
-          {
-
-            name:
-              name,
-
-            employeeId:
-              employeeId,
-
-            recordMs:
-              elapsed,
-
-            errorMs:
-              errorMs,
-
-            playedAt:
-              serverTimestamp()
-
-          }
-
-        );
-
-      }
-
-    );
+  const absoluteDifference =
+    Math.abs(difference);
 
 
-    /*
-      동일 브라우저에도 참가 흔적 저장
-    */
-
-    localStorage.setItem(
-      "tenSecondPlayed",
-      employeeId
-    );
+  timer.textContent =
+    formatTime(elapsed);
 
 
-    $("game")
-      .classList
-      .add("hide");
+  let message = "";
 
 
-    $("result")
-      .classList
-      .remove("hide");
+  if (absoluteDifference <= 10) {
 
-
-    /* 결과 */
-
-    $("record").textContent =
-
-      (elapsed / 1000)
-      .toFixed(3)
-
-      + "초";
-
-
-    $("errorVal").textContent =
-
-      (errorMs / 1000)
-      .toFixed(3)
-
-      + "초";
-
-
-    /* 순위 */
-
-    const rank =
-      await refreshRank();
-
-
-    $("rank").textContent =
-
-      rank
-
-      ? `현재 ${rank}위`
-
-      : "순위 계산 중";
+    message = "🏆 PERFECT!";
 
   }
 
-  catch(error){
+  else if (absoluteDifference <= 50) {
 
-    message(
-      "gameMsg",
-      error.message,
-      true
-    );
+    message = "🔥 AMAZING!";
 
   }
 
-};
+  else if (absoluteDifference <= 100) {
+
+    message = "👏 GREAT!";
+
+  }
+
+  else if (absoluteDifference <= 300) {
+
+    message = "👍 GOOD!";
+
+  }
+
+  else {
+
+    message = "한 번 더 도전해보세요!";
+
+  }
 
 
-/* =====================================================
-   관리자 결과 다운로드
-===================================================== */
+  const sign =
+    difference >= 0
+    ? "+"
+    : "-";
 
-$("downloadBtn").onclick =
-async () => {
 
-  try {
+  result.innerHTML = `
 
-    /*
-      관리자 비밀번호 확인
-    */
+    <div class="result-title">
+      ${playerName.value}님의 기록
+    </div>
 
-    if(
-      $("adminPassword").value
-      !==
-      ADMIN_PASSWORD
-    ){
+    <div class="result-time">
+      ${formatTime(elapsed)}초
+    </div>
 
-      throw new Error(
-        "관리자 비밀번호가 올바르지 않습니다."
-      );
+    <div class="error">
+      오차 ${sign}${formatTime(
+        absoluteDifference
+      )}초
+    </div>
+
+    <div style="
+      margin-top:12px;
+      font-weight:bold;
+      color:white;
+    ">
+      ${message}
+    </div>
+
+  `;
+
+
+  mainBtn.style.display =
+    "none";
+
+
+  retry.style.display =
+    "block";
+
+}
+
+
+function resetGame() {
+
+  running = false;
+
+  timer.textContent =
+    "10.000";
+
+
+  result.innerHTML =
+    "";
+
+
+  playerName.disabled =
+    false;
+
+
+  mainBtn.textContent =
+    "START";
+
+
+  mainBtn.classList.remove(
+    "stop"
+  );
+
+
+  mainBtn.style.display =
+    "inline-block";
+
+
+  retry.style.display =
+    "none";
+
+}
+
+
+mainBtn.addEventListener(
+  "click",
+  function() {
+
+    if (!running) {
+
+      startGame();
+
+    } else {
+
+      stopGame();
 
     }
 
-
-    /*
-      오차가 작은 순서대로
-      전체 결과 조회
-    */
-
-    const resultQuery =
-      query(
-
-        collection(
-          db,
-          "gameResults"
-        ),
-
-        orderBy(
-          "errorMs"
-        )
-
-      );
-
-
-    const snapshot =
-      await getDocs(
-        resultQuery
-      );
-
-
-    /*
-      Excel에서 바로 열 수 있는
-      CSV 데이터 생성
-    */
-
-    let csv =
-
-      "순위,이름,사번,기록(초),오차(초),참여시간\n";
-
-
-    let rank = 0;
-
-
-    snapshot.forEach(
-      documentSnapshot => {
-
-
-        const data =
-          documentSnapshot.data();
-
-
-        const date =
-
-          data.playedAt?.toDate
-
-          ?
-
-          data.playedAt
-              .toDate()
-              .toLocaleString(
-                "ko-KR"
-              )
-
-          :
-
-          "";
-
-
-        csv +=
-
-          `${++rank},` +
-
-          `"${data.name}",` +
-
-          `"${data.employeeId}",` +
-
-          `${(data.recordMs / 1000).toFixed(3)},` +
-
-          `${(data.errorMs / 1000).toFixed(3)},` +
-
-          `"${date}"\n`;
-
-      }
-    );
-
-
-    /*
-      한글 깨짐 방지:
-      UTF-8 BOM 추가
-    */
-
-    const blob =
-      new Blob(
-
-        [
-          "\ufeff" +
-          csv
-        ],
-
-        {
-          type:
-          "text/csv;charset=utf-8"
-        }
-
-      );
-
-
-    const link =
-      document.createElement(
-        "a"
-      );
-
-
-    link.href =
-      URL.createObjectURL(
-        blob
-      );
-
-
-    link.download =
-
-      "10초게임_참여결과_" +
-
-      new Date()
-        .toISOString()
-        .slice(0,10)
-
-      +
-
-      ".csv";
-
-
-    link.click();
-
-
-    URL.revokeObjectURL(
-      link.href
-    );
-
-
-    message(
-
-      "adminMsg",
-
-      "Excel에서 바로 열 수 있는 결과 파일을 다운로드했습니다."
-
-    );
-
   }
+);
 
-  catch(error){
 
-    message(
-      "adminMsg",
-      error.message,
-      true
-    );
-
-  }
-
-};
+retry.addEventListener(
+  "click",
+  resetGame
+);
 
 </script>
 
