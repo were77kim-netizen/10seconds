@@ -1,1 +1,698 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
 
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0">
+
+<title>10초 맞추기 기록 다운로드</title>
+
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    padding: 30px 18px;
+    font-family: Arial, "Noto Sans KR", sans-serif;
+    background: #0d1729;
+    color: #ffffff;
+  }
+
+  .container {
+    width: min(100%, 1000px);
+    margin: 0 auto;
+  }
+
+  h1 {
+    margin-bottom: 8px;
+  }
+
+  .description {
+    margin-bottom: 24px;
+    color: #aeb9cc;
+  }
+
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  button {
+    padding: 13px 20px;
+    border: 0;
+    border-radius: 9px;
+    background: #ff1744;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  button.secondary {
+    background: #2a3850;
+  }
+
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .status {
+    margin-bottom: 16px;
+    color: #9fb0c8;
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid #2b3951;
+    border-radius: 12px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 750px;
+    background: #152138;
+  }
+
+  th,
+  td {
+    padding: 13px 12px;
+    border-bottom: 1px solid #2b3951;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  th {
+    background: #202e47;
+    color: #dfe7f5;
+  }
+
+  td {
+    color: #c4cfe0;
+  }
+
+  tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .top-rank {
+    color: #ffcf33;
+    font-weight: 800;
+  }
+
+  .error {
+    padding: 15px;
+    border-radius: 8px;
+    background: rgba(255, 23, 68, 0.15);
+    color: #ff718d;
+  }
+
+  .security-note {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 10px;
+    background: rgba(255, 204, 0, 0.08);
+    color: #ffd966;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>10 Second Challenge</h1>
+
+  <div class="description">
+    Firestore에 저장된 참가자 기록을 조회하고 Excel용 CSV로 내려받습니다.
+  </div>
+
+  <div class="toolbar">
+
+    <button id="downloadBtn" disabled>
+      Excel용 CSV 다운로드
+    </button>
+
+    <button
+      id="refreshBtn"
+      class="secondary">
+      새로고침
+    </button>
+
+  </div>
+
+  <div
+    id="status"
+    class="status">
+    Firebase 기록을 불러오는 중입니다.
+  </div>
+
+  <div class="table-wrap">
+
+    <table>
+
+      <thead>
+        <tr>
+          <th>순위</th>
+          <th>참가자</th>
+          <th>기록</th>
+          <th>오차</th>
+          <th>빠름/느림</th>
+          <th>저장시간</th>
+          <th>문서 ID</th>
+        </tr>
+      </thead>
+
+      <tbody id="scoreBody">
+      </tbody>
+
+    </table>
+
+  </div>
+
+  <div class="security-note">
+    주의: 이 페이지 주소를 아는 사람은 Firestore Rules가 읽기를 허용하는 경우
+    참가자 이름과 기록을 조회할 수 있습니다. 행사 운영 후에는 Firebase
+    Authentication을 추가하거나 Rules에서 공개 읽기를 차단하는 것이 좋습니다.
+  </div>
+
+</div>
+
+
+<script type="module">
+
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+
+import {
+  getFirestore,
+  collection,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+
+
+/* Firebase 설정 */
+
+const firebaseConfig = {
+  apiKey:
+    "AIzaSyB2GfNK5K9RxgDj6CNvL8e6-790W9Odxu4",
+
+  authDomain:
+    "hvac-10second.firebaseapp.com",
+
+  projectId:
+    "hvac-10second",
+
+  storageBucket:
+    "hvac-10second.firebasestorage.app",
+
+  messagingSenderId:
+    "509312860044",
+
+  appId:
+    "1:509312860044:web:ae287cd531ad755e4820a9",
+
+  measurementId:
+    "G-QPK37T0F3R"
+};
+
+
+const app =
+  initializeApp(firebaseConfig);
+
+const db =
+  getFirestore(app);
+
+
+const status =
+  document.getElementById("status");
+
+const scoreBody =
+  document.getElementById("scoreBody");
+
+const downloadBtn =
+  document.getElementById("downloadBtn");
+
+const refreshBtn =
+  document.getElementById("refreshBtn");
+
+
+let scoreList = [];
+
+
+/* HTML 특수문자 방지 */
+
+function escapeHTML(value) {
+
+  const div =
+    document.createElement("div");
+
+  div.textContent =
+    String(value ?? "");
+
+  return div.innerHTML;
+}
+
+
+/* Firestore Timestamp 변환 */
+
+function formatTimestamp(timestamp) {
+
+  if (!timestamp) {
+    return "";
+  }
+
+  try {
+
+    const date =
+      timestamp.toDate();
+
+    return new Intl.DateTimeFormat(
+      "ko-KR",
+      {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+      }
+    ).format(date);
+
+  } catch (error) {
+
+    return "";
+
+  }
+}
+
+
+/* Firestore 기록 조회 */
+
+async function loadScores() {
+
+  status.textContent =
+    "Firebase 기록을 불러오는 중입니다.";
+
+  scoreBody.innerHTML =
+    "";
+
+  downloadBtn.disabled =
+    true;
+
+  refreshBtn.disabled =
+    true;
+
+
+  try {
+
+    const snapshot =
+      await getDocs(
+        collection(db, "scores")
+      );
+
+
+    scoreList = snapshot.docs.map(
+      document => {
+
+        const data =
+          document.data();
+
+        return {
+          id:
+            document.id,
+
+          name:
+            data.name ?? "",
+
+          time:
+            Number(data.time ?? 0),
+
+          error:
+            Number(data.error ?? 0),
+
+          difference:
+            Number(data.difference ?? 0),
+
+          timestamp:
+            data.timestamp ?? null
+        };
+
+      }
+    );
+
+
+    /*
+      오차가 작은 기록부터 정렬
+
+      오차가 같으면 실제 기록이
+      10초에 가까운 순서로 정렬
+    */
+
+    scoreList.sort(
+      (a, b) => {
+
+        if (a.error !== b.error) {
+          return a.error - b.error;
+        }
+
+        return a.time - b.time;
+
+      }
+    );
+
+
+    renderScores();
+
+
+    status.textContent =
+      `총 ${scoreList.length}개의 기록을 불러왔습니다.`;
+
+
+    downloadBtn.disabled =
+      scoreList.length === 0;
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "Firestore 조회 오류:",
+      error
+    );
+
+
+    status.innerHTML = `
+      <div class="error">
+        기록 조회에 실패했습니다.<br>
+        오류 코드:
+        ${escapeHTML(error.code || "unknown")}
+        <br>
+        ${escapeHTML(error.message || "")}
+      </div>
+    `;
+
+  }
+
+  finally {
+
+    refreshBtn.disabled =
+      false;
+
+  }
+
+}
+
+
+/* 화면 표 출력 */
+
+function renderScores() {
+
+  if (scoreList.length === 0) {
+
+    scoreBody.innerHTML = `
+      <tr>
+        <td colspan="7">
+          저장된 기록이 없습니다.
+        </td>
+      </tr>
+    `;
+
+    return;
+  }
+
+
+  scoreBody.innerHTML =
+    scoreList.map(
+      (score, index) => {
+
+        const direction =
+          score.difference < 0
+            ? "빠름"
+            : score.difference > 0
+              ? "느림"
+              : "정확";
+
+
+        const rankClass =
+          index < 3
+            ? "top-rank"
+            : "";
+
+
+        return `
+          <tr>
+
+            <td class="${rankClass}">
+              ${index + 1}
+            </td>
+
+            <td>
+              ${escapeHTML(score.name)}
+            </td>
+
+            <td>
+              ${score.time.toFixed(3)}초
+            </td>
+
+            <td>
+              ${score.error.toFixed(3)}초
+            </td>
+
+            <td>
+              ${direction}
+              ${score.difference >= 0 ? "+" : ""}
+              ${score.difference.toFixed(3)}초
+            </td>
+
+            <td>
+              ${escapeHTML(
+                formatTimestamp(
+                  score.timestamp
+                )
+              )}
+            </td>
+
+            <td>
+              ${escapeHTML(score.id)}
+            </td>
+
+          </tr>
+        `;
+
+      }
+    ).join("");
+
+}
+
+
+/* CSV 셀 안전 처리 */
+
+function csvCell(value) {
+
+  const text =
+    String(value ?? "");
+
+  /*
+    큰 문서 ID, 앞자리 0 등이
+    Excel에서 숫자로 바뀌는 것을 줄임
+  */
+
+  const escaped =
+    text.replace(/"/g, '""');
+
+  return `"${escaped}"`;
+}
+
+
+/* 파일명 날짜 */
+
+function getFileDate() {
+
+  const now =
+    new Date();
+
+  const year =
+    now.getFullYear();
+
+  const month =
+    String(
+      now.getMonth() + 1
+    ).padStart(2, "0");
+
+  const day =
+    String(
+      now.getDate()
+    ).padStart(2, "0");
+
+  const hour =
+    String(
+      now.getHours()
+    ).padStart(2, "0");
+
+  const minute =
+    String(
+      now.getMinutes()
+    ).padStart(2, "0");
+
+  return `${year}${month}${day}_${hour}${minute}`;
+}
+
+
+/* CSV 다운로드 */
+
+function downloadCSV() {
+
+  if (scoreList.length === 0) {
+
+    alert(
+      "다운로드할 기록이 없습니다."
+    );
+
+    return;
+  }
+
+
+  const headers = [
+    "순위",
+    "참가자",
+    "기록(초)",
+    "절대오차(초)",
+    "차이(초)",
+    "빠름/느림",
+    "저장시간",
+    "문서ID"
+  ];
+
+
+  const rows =
+    scoreList.map(
+      (score, index) => {
+
+        const direction =
+          score.difference < 0
+            ? "빠름"
+            : score.difference > 0
+              ? "느림"
+              : "정확";
+
+
+        return [
+          index + 1,
+          score.name,
+          score.time.toFixed(3),
+          score.error.toFixed(3),
+          score.difference.toFixed(3),
+          direction,
+          formatTimestamp(score.timestamp),
+          score.id
+        ];
+
+      }
+    );
+
+
+  const csvText = [
+
+    headers
+      .map(csvCell)
+      .join(","),
+
+    ...rows.map(
+      row =>
+        row
+          .map(csvCell)
+          .join(",")
+    )
+
+  ].join("\r\n");
+
+
+  /*
+    UTF-8 BOM 추가
+
+    Excel에서 한글 깨짐 방지
+  */
+
+  const bom =
+    "\uFEFF";
+
+
+  const blob =
+    new Blob(
+      [bom + csvText],
+      {
+        type:
+          "text/csv;charset=utf-8;"
+      }
+    );
+
+
+  const url =
+    URL.createObjectURL(blob);
+
+
+  const anchor =
+    document.createElement("a");
+
+
+  anchor.href =
+    url;
+
+
+  anchor.download =
+    `10second_scores_${getFileDate()}.csv`;
+
+
+  document.body.appendChild(
+    anchor
+  );
+
+
+  anchor.click();
+
+
+  anchor.remove();
+
+
+  URL.revokeObjectURL(
+    url
+  );
+
+}
+
+
+/* 버튼 */
+
+downloadBtn.addEventListener(
+  "click",
+  downloadCSV
+);
+
+
+refreshBtn.addEventListener(
+  "click",
+  loadScores
+);
+
+
+/* 최초 실행 */
+
+loadScores();
+
+</script>
+
+</body>
+</html>
