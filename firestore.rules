@@ -1,1 +1,53 @@
+rules_version = '2';
 
+service cloud.firestore {
+
+  match /databases/{database}/documents {
+
+    match /gameResults/{employeeId} {
+
+      allow create:
+
+        if !exists(
+          /databases/$(database)
+          /documents/gameResults/$(employeeId)
+        )
+
+        && request.resource.data.employeeId
+           == employeeId
+
+        && request.resource.data.name
+           is string
+
+        && request.resource.data.name.size()
+           >= 2
+
+        && request.resource.data.name.size()
+           <= 30
+
+        && request.resource.data.recordMs
+           is int
+
+        && request.resource.data.recordMs
+           > 0
+
+        && request.resource.data.recordMs
+           < 60000;
+
+
+      /* 실시간 순위 조회 */
+
+      allow read:
+        if true;
+
+
+      /* 한번 생성된 기록 수정/삭제 불가 */
+
+      allow update, delete:
+        if false;
+
+    }
+
+  }
+
+}
